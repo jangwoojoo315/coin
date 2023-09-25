@@ -1,16 +1,18 @@
 import { useCallback, useEffect, useRef } from "react";
 
 interface CoinProps {
-  //   frameX: number;
+  setOpen: (value: boolean) => void;
 }
 
 const COIN_URL = "./coin.png";
 const CANVAS_WIDTH = 50;
-const CANVAS_HEIGHT = 50;
+const CANVAS_HEIGHT = 70;
 
 const INTERVAL = 1000 / 60; //60fps
-
+const COUNT = 10;
 const Coin = (props: CoinProps) => {
+  const { setOpen } = props;
+
   const count = useRef(0);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const frameX = useRef(0);
@@ -18,6 +20,8 @@ const Coin = (props: CoinProps) => {
 
   const coinY = useRef(50);
   const coinYCount = useRef(1);
+
+  const curCount = useRef(0);
 
   const drawImage = useCallback(() => {
     requestAnimationFrame(drawImage);
@@ -44,12 +48,20 @@ const Coin = (props: CoinProps) => {
       coinYCount.current += 0.01;
       ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-      coinY.current =
-        Number(coinY.current.toFixed(0)) === 0
-          ? 0
-          : coinY.current / coinYCount.current;
+      if (frameX.current === 0) curCount.current += 1;
+      if (curCount.current > COUNT) {
+        coinY.current += 2;
+        if (coinY.current > 50) {
+          setOpen(false);
+          return;
+        }
+      } else {
+        coinY.current =
+          Number(coinY.current.toFixed(0)) === 0
+            ? 0
+            : coinY.current / coinYCount.current;
+      }
 
-      console.log(coinYCount.current, coinY.current);
       ctx.drawImage(
         image,
         (image.width / 10) * frameX.current,
@@ -59,12 +71,12 @@ const Coin = (props: CoinProps) => {
         0,
         coinY.current,
         CANVAS_WIDTH,
-        CANVAS_HEIGHT
+        CANVAS_WIDTH
       );
     };
 
     then.current = now - (delta % INTERVAL);
-  }, [count]);
+  }, [setOpen]);
   useEffect(() => {
     if (!canvasRef.current) return;
     canvasRef.current.width = CANVAS_WIDTH;
@@ -73,10 +85,6 @@ const Coin = (props: CoinProps) => {
     const requestId = requestAnimationFrame(drawImage);
     return () => cancelAnimationFrame(requestId);
   }, [drawImage]);
-  return (
-    <div>
-      <canvas ref={canvasRef} style={{ backgroundColor: "red" }}></canvas>
-    </div>
-  );
+  return <canvas ref={canvasRef}></canvas>;
 };
 export default Coin;
