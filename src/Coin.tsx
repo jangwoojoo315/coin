@@ -9,7 +9,7 @@ const CANVAS_WIDTH = 50;
 const CANVAS_HEIGHT = 70;
 
 const INTERVAL = 1000 / 60; //60fps
-const COUNT = 10;
+const COUNT = 5;
 const Coin = (props: CoinProps) => {
   const { setOpen } = props;
 
@@ -51,7 +51,7 @@ const Coin = (props: CoinProps) => {
       if (frameX.current === 0) curCount.current += 1;
       if (curCount.current > COUNT) {
         coinY.current += 2;
-        if (coinY.current > 50) {
+        if (coinY.current > 75) {
           setOpen(false);
           return;
         }
